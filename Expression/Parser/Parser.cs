@@ -4,22 +4,27 @@ namespace Expression.Parser;
 
 public static class Parser
 {
-    public static ExpressionNode.ExpressionNode ParseExpression(string expression)
+    public static TryResults<ExpressionNode.ExpressionNode> ParseExpression(string expression)
     {
         var index = 0;
         var stack = new Stack<char>();
 
         var expressionNode = ParseExprInternal(expression, stack, ref index);
-        if (stack.Count != 0)
+        if (expressionNode.Failed)
         {
-            throw new InvalidOperationException($"Invalid format of bracket : '{expression}'");
+            return TryResults<ExpressionNode.ExpressionNode>.Fail(expressionNode.ErrorMessage);
         }
 
-        return expressionNode;
+        if (stack.Count != 0)
+        {
+            return TryResults<ExpressionNode.ExpressionNode>.Fail($"Invalid format of bracket : '{expression}'");
+        }
+
+        return TryResults<ExpressionNode.ExpressionNode>.Succeed(expressionNode.Value!);
     }
 
 
-    private static ExpressionNode.ExpressionNode ParseExpressionTerm(string expression, Stack<char> stack, ref int index)
+    private static TryResults<ExpressionNode.ExpressionNode> ParseExpressionTerm(string expression, Stack<char> stack, ref int index)
     {
         if (expression == null) throw new ArgumentNullException(nameof(expression));
         if (stack == null) throw new ArgumentNullException(nameof(stack));
@@ -28,13 +33,13 @@ public static class Parser
         if (char.IsDigit(c))
         {
             index++;
-            return new ElementNode(c.ToString());
+            return TryResults<ExpressionNode.ExpressionNode>.Succeed(new ElementNode(c.ToString()));
         }
         
         if (c == 'x')
         {
             index++;
-            return new ElementNode(c.ToString());
+            return TryResults<ExpressionNode.ExpressionNode>.Succeed(new ElementNode(c.ToString()));
         }
 
         if (c == '(')
@@ -44,46 +49,79 @@ public static class Parser
             return ParseExprInternal(expression, stack, ref index);
         }
 
-        throw new InvalidOperationException("Invalid character: " + c);
+        return TryResults<ExpressionNode.ExpressionNode>.Fail("Invalid character: " + c);
     }
 
-    private static ExpressionNode.ExpressionNode ParseExprInternal(string expression, Stack<char> stack, ref int index)
+    private static TryResults<ExpressionNode.ExpressionNode> ParseExprInternal(string expression, Stack<char> stack, ref int index)
     {
         if (expression == null) throw new ArgumentNullException(nameof(expression));
         if (stack == null) throw new ArgumentNullException(nameof(stack));
 
-        var node = ParseExpressionTerm(expression, stack, ref index);
+        var nodeResult = ParseExpressionTerm(expression, stack, ref index);
+        if (nodeResult.Failed)
+        {
+            return nodeResult;
+        }
 
+        var node = nodeResult.Value!;
         while (index < expression.Length)
         {
             var c = expression[index];
             if (c == '+')
             {
                 index++;
-                var addNode = new AddNode();
-                addNode.AddElement(node);
 
                 var nextNode = ParseExpressionTerm(expression, stack, ref index);
-                addNode.AddElement(nextNode);
+                if (nextNode.Failed)
+                {
+                    return nextNode;
+                }
 
-                node = addNode;
+                if (node is AddNode parentNode) // this one break the extension? use visitor?
+                {
+                    parentNode.AddElement(nextNode.Value!);
+                    node = parentNode;
+                }
+                else
+                {
+                    var addNode = new AddNode();
+
+                    addNode.AddElement(node);
+                    addNode.AddElement(nextNode.Value!);
+
+                    node = addNode;
+                }
             }
             else if (c == '*')
             {
                 index++;
-                var multiplyNode = new MultiplyNode();
-                multiplyNode.AddElement(node);
 
                 var nextNode = ParseExpressionTerm(expression, stack, ref index);
-                multiplyNode.AddElement(nextNode);
+                if (nextNode.Failed)
+                {
+                    return nextNode;
+                }
 
-                node = multiplyNode;
+                if (node is MultiplyNode parentNode)
+                {
+                    parentNode.AddElement(nextNode.Value!);
+                    node = parentNode;
+                }
+                else
+                {
+                    var multiplyNode = new MultiplyNode();
+
+                    multiplyNode.AddElement(node);
+                    multiplyNode.AddElement(nextNode.Value!);
+
+                    node = multiplyNode;
+                }
             }
             else if (c == ')')
             {
                 if (stack.Count == 0 || stack.Pop() != '(')
                 {
-                    throw new InvalidOperationException($"Invalid format of bracket : '{expression}'");
+                    return TryResults<ExpressionNode.ExpressionNode>.Fail($"Invalid format of bracket : '{expression}'");
                 }
 
                 index++;
@@ -91,10 +129,10 @@ public static class Parser
             }
             else
             {
-                throw new InvalidOperationException("Invalid character:" + c);
+                return TryResults<ExpressionNode.ExpressionNode>.Fail("Invalid character:" + c);
             }
         }
 
-        return node;
+        return TryResults<ExpressionNode.ExpressionNode>.Succeed(node);
     }
 }
