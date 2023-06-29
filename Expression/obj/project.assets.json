@@ -1339,11 +1339,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression\\Expression.csproj",
+      "projectUniqueName": "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression\\Expression.csproj",
       "projectName": "Expression",
-      "projectPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression\\Expression.csproj",
+      "projectPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression\\Expression.csproj",
       "packagesPath": "C:\\Users\\NguyenDao\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression\\obj\\",
+      "outputPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

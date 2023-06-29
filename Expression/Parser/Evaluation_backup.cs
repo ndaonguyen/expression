@@ -1,4 +1,4 @@
-﻿using Expression.ExpressionNode;
+﻿/*using Expression.ExpressionNode;
 using System.Text;
 
 namespace Expression.Parser;
@@ -57,7 +57,7 @@ public abstract class Evaluation
             }
 
             result.Length--; // Remove the last '+'
-            return result.ToString();*/
+            return result.ToString();#1#
         }
 
         public string Visit(MultiplyNode node)
@@ -66,7 +66,7 @@ public abstract class Evaluation
             var checkExpressionWithBracket = new ExpressionWithBracketVisitor();
             foreach (var childNode in node.Expressions)
             {
-                var nodeResult =  childNode.Accept(this);
+                var nodeResult = childNode.Accept(this);
                 if (childNode.Accept(checkExpressionWithBracket))
                 {
                     result.Append('(');
@@ -120,7 +120,7 @@ public abstract class Evaluation
             }
             result.Length--; // Remove the last '*'
             return result.ToString();
-            */
+            #1#
         }
     }
 
@@ -145,7 +145,7 @@ public abstract class Evaluation
 
     private class ExpressionPlusSimplifyVisitor : IExpressionNodeVisitor<ExpressionPlusSimplifyVisitor>
     {
-        public ExpressionPlusSimplifyVisitor(int? simplifyPlus = null, List<string>? variable= null)
+        public ExpressionPlusSimplifyVisitor(int? simplifyPlus = null, List<string>? variable = null)
         {
             SimplifyPlus = simplifyPlus ?? 0;
             Variable = variable ?? new List<string>();
@@ -239,5 +239,5 @@ public abstract class Evaluation
             return this;
         }
     }
-    
-}
+
+}*/

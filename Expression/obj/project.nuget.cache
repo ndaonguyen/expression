@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Lp7EOvFUwACtmDc+n/lg6r/oaUOX7vHYej8RkZe1iycIZulbeTmW8bM6K2oheYoHLmWXNpgfr+ABdHo90gbcBw==",
+  "dgSpecHash": "gZAPIuCZkxGmgKOUObL6YGXibcbbIN3sSGG+zrkC2Cpye9SSl4/0n3ZNbNX+9KqJT/tjBUtAkT+8EJVEXYVzrw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression\\Expression.csproj",
+  "projectFilePath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression\\Expression.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\NguyenDao\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\3.3.4\\microsoft.codeanalysis.analyzers.3.3.4.nupkg.sha512",
     "C:\\Users\\NguyenDao\\.nuget\\packages\\microsoft.codeanalysis.common\\4.6.0\\microsoft.codeanalysis.common.4.6.0.nupkg.sha512",

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression.Tests\\Expression.Tests.csproj": {}
+    "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression.Tests\\Expression.Tests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression.Tests\\Expression.Tests.csproj": {
+    "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression.Tests\\Expression.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression.Tests\\Expression.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression.Tests\\Expression.Tests.csproj",
         "projectName": "Expression.Tests",
-        "projectPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression.Tests\\Expression.Tests.csproj",
+        "projectPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression.Tests\\Expression.Tests.csproj",
         "packagesPath": "C:\\Users\\NguyenDao\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression.Tests\\obj\\",
+        "outputPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -32,8 +32,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression\\Expression.csproj": {
-                "projectPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression\\Expression.csproj"
+              "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression\\Expression.csproj": {
+                "projectPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression\\Expression.csproj"
               }
             }
           }
@@ -89,14 +89,14 @@
         }
       }
     },
-    "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression\\Expression.csproj": {
+    "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression\\Expression.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression\\Expression.csproj",
+        "projectUniqueName": "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression\\Expression.csproj",
         "projectName": "Expression",
-        "projectPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression\\Expression.csproj",
+        "projectPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression\\Expression.csproj",
         "packagesPath": "C:\\Users\\NguyenDao\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\Expression\\obj\\",
+        "outputPath": "C:\\Users\\NguyenDao\\Downloads\\Expression\\expression_git\\Expression\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

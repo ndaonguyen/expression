@@ -10,19 +10,26 @@ namespace Expression.Tests
         {
         }
 
+        [Test]
+        public void TestEvaluate()
+        {
+            // input : 3 => output: 3
+            Assert.That(Evaluation.EvaluateExpression(new ElementNode("3")), Is.EqualTo("3"));
+        }
+
 
         [Test]
         public void TestEvaluate1()
         {
             // input : x => output: x
-            Assert.AreEqual("x", Evaluation.EvaluateExpression(new ElementNode("x")));
+            Assert.That(Evaluation.EvaluateExpression(new ElementNode("x")), Is.EqualTo("x"));
         }
 
         [Test]
         public void TestEvaluate2()
         {
             // input : x+1 => output: x+1
-            Assert.AreEqual("x+1", Evaluation.EvaluateExpression(new ElementNode("x+1")));
+            Assert.That(Evaluation.EvaluateExpression(new ElementNode("x+1")), Is.EqualTo("x+1"));
         }
 
         [Test]
@@ -40,7 +47,7 @@ namespace Expression.Tests
 
             addNode.AddElement(addNodeChild);
 
-            Assert.AreEqual("x+5", Evaluation.EvaluateExpression(addNode));
+            Assert.That(Evaluation.EvaluateExpression(addNode), Is.EqualTo("x+5"));
         }
 
         [Test]
@@ -62,11 +69,42 @@ namespace Expression.Tests
 
             addNode.AddElement(addNodeChild);
 
-            Assert.AreEqual("x+8", Evaluation.EvaluateExpression(addNode));
+            Assert.That(Evaluation.EvaluateExpression(addNode), Is.EqualTo("x+8"));
         }
 
         [Test]
         public void TestEvaluate5()
+        {
+            // input : ((1+2+(2+(3+x))+(x+2+1)) => output:  x+11+x
+
+            var addNode1 = new AddNode();
+            addNode1.AddElement(new ElementNode("1"));
+            addNode1.AddElement(new ElementNode("2"));
+
+            var addNodeChild = new AddNode();
+            addNodeChild.AddElement(new ElementNode("2"));
+
+            var addNodeChild2 = new AddNode();
+            addNodeChild2.AddElement(new ElementNode("3"));
+            addNodeChild2.AddElement(new ElementNode("x"));
+            addNodeChild.AddElement(addNodeChild2);
+
+            addNode1.AddElement(addNodeChild);
+
+            var addNode2 = new AddNode();
+            addNode2.AddElement(new ElementNode("x"));
+            addNode2.AddElement(new ElementNode("2"));
+            addNode2.AddElement(new ElementNode("1"));
+
+            var addNodeParent = new AddNode();
+            addNodeParent.AddElement(addNode1);
+            addNodeParent.AddElement(addNode2);
+
+            Assert.That(Evaluation.EvaluateExpression(addNodeParent), Is.EqualTo("2*x+11"));
+        }
+
+        [Test]
+        public void TestEvaluate6()
         {
             // input : ((1+2+(2+(3+x))*(1+(2+x)) => output:  (x+8)*(x+3)
 
@@ -96,11 +134,11 @@ namespace Expression.Tests
             multiplyChild.AddElement(addNode);
             multiplyChild.AddElement(addNodeRight);
 
-            Assert.AreEqual("(x+8)*(x+3)", Evaluation.EvaluateExpression(multiplyChild));
+            Assert.That(Evaluation.EvaluateExpression(multiplyChild), Is.EqualTo("(x+8)*(x+3)"));
         }
 
         [Test]
-        public void TestEvaluate6()
+        public void TestEvaluate7()
         {
             // input : (1*(2*x)*3) => output:  x*6
 
@@ -114,7 +152,25 @@ namespace Expression.Tests
             multiplyNodeParent.AddElement(multiplyNode);
             multiplyNodeParent.AddElement(new ElementNode("3"));
 
-            Assert.AreEqual("x*6", Evaluation.EvaluateExpression(multiplyNodeParent));
+            Assert.That(Evaluation.EvaluateExpression(multiplyNodeParent), Is.EqualTo("x*6"));
+        }
+
+        [Test]
+        public void TestEvaluate8()
+        {
+            // input :((1+(2*x)+1) => output:  2*x+2
+
+            var addNode = new AddNode();
+            addNode.AddElement(new ElementNode("1"));
+
+            var multiplyNode = new MultiplyNode();
+            multiplyNode.AddElement(new ElementNode("2"));
+            multiplyNode.AddElement(new ElementNode("x"));
+
+            addNode.AddElement(multiplyNode);
+            addNode.AddElement(new ElementNode("1"));
+
+            Assert.That(Evaluation.EvaluateExpression(addNode), Is.EqualTo("2*x+2"));
         }
 
         [Test]
@@ -140,7 +196,7 @@ namespace Expression.Tests
             multiplyNodeOutside.AddElement(addNode);
             multiplyNodeOutside.AddElement(addNodeChild);
 
-            Assert.AreEqual("x+5", Evaluation.EvaluateExpression(multiplyNodeOutside));
+            Assert.That(Evaluation.EvaluateExpression(multiplyNodeOutside), Is.EqualTo("x+5"));
         }
     }
 }
