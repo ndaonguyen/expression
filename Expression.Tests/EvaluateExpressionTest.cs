@@ -252,6 +252,210 @@ namespace Expression.Tests
 
 
         // ignore these, im testing
+
+        // test elementNode * elementNode
+
+
+        [Test]
+        public void TestEvaluate221()
+        {
+            // input : x*x
+            // output: x^2
+
+            var elementNode = new ElementNode("x");
+            var resultNode = elementNode.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x^2"));
+        }
+
+        [Test]
+        public void TestEvaluate222()
+        {
+            // input : 2*x
+            // output: 2*x
+
+            var elementNode1 = new ElementNode("x");
+            var elementNode2 = new ElementNode("2");
+            var resultNode = elementNode1.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode2));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("2*x"));
+        }
+
+        [Test]
+        public void TestEvaluate223()
+        {
+            // input : 2*2
+            // output: 4
+
+            var elementNode1 = new ElementNode("2");
+            var elementNode2 = new ElementNode("2");
+            var resultNode = elementNode1.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode2));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("4"));
+        }
+
+        [Test]
+        public void TestEvaluate224()
+        {
+            // input : (2*x)*(x^2)
+            // output: 2*x^3
+
+            var elementNode1 = new ElementNode("2*x");
+            var elementNode2 = new ElementNode("x^2");
+            var resultNode = elementNode1.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode2));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("2*x^3"));
+        }
+
+        // test elementNode * AddNode
+        [Test]
+        public void TestEvaluate225()
+        {
+            // input : x*(x+1)
+            // output: x^2 +x
+
+            var elementNode = new ElementNode("x");
+
+            var addNodeChild = new AddNode();
+            addNodeChild.AddElement(new ElementNode("x"));
+            addNodeChild.AddElement(new ElementNode("1"));
+
+            var resultNode = addNodeChild.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x^2+x"));
+        }
+
+        // test elementNode * AddNode
+        [Test]
+        public void TestEvaluate226()
+        {
+            // input : x*(x+1)
+            // output: x^2 +x
+
+            var elementNode = new ElementNode("x");
+
+            var addNodeChild = new AddNode();
+            addNodeChild.AddElement(new ElementNode("x"));
+            addNodeChild.AddElement(new ElementNode("1"));
+
+            var resultNode = addNodeChild.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x^2+x"));
+        }
+
+        [Test]
+        public void TestEvaluate227()
+        {
+            // input : (x*((x*x)+2))
+            // output: x^3+2*x
+
+            var elementNode = new ElementNode("x");
+
+            var nodeChild = new MultiplyNode();
+            nodeChild.AddElement(new ElementNode("x"));
+            nodeChild.AddElement(new ElementNode("x"));
+
+            var addNodeChild = new AddNode();
+            addNodeChild.AddElement(nodeChild);
+            addNodeChild.AddElement(new ElementNode("2"));
+
+            var resultNode = addNodeChild.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x^3+2*x"));
+        }
+
+        [Test]
+        public void TestEvaluate228()
+        {
+            // input : (x*((2*x)+2))
+            // output: x^3+2*x
+
+            var elementNode = new ElementNode("x");
+
+            var nodeChild = new MultiplyNode();
+            nodeChild.AddElement(new ElementNode("2"));
+            nodeChild.AddElement(new ElementNode("x"));
+
+            var addNodeChild = new AddNode();
+            addNodeChild.AddElement(nodeChild);
+            addNodeChild.AddElement(new ElementNode("2"));
+
+            var resultNode = addNodeChild.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("2*x^2+2*x"));
+        }
+
+        [Test]
+        public void TestEvaluate229()
+        {
+            // input : (x*((x*x+2)+2))
+            // output: x^3+4*x
+
+            var elementNode = new ElementNode("x");
+
+            var nodeChild = new MultiplyNode();
+            nodeChild.AddElement(new ElementNode("x"));
+            nodeChild.AddElement(new ElementNode("x"));
+
+            var addNodeChild2 = new AddNode();
+            addNodeChild2.AddElement(nodeChild);
+            addNodeChild2.AddElement(new ElementNode("2"));
+
+            var addNode = new AddNode();
+            addNode.AddElement(addNodeChild2);
+            addNode.AddElement(new ElementNode("2"));
+
+            var resultNode = addNode.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x^3+4*x")); // currently output x^3+2*x+2*x
+        }
+
+        // test elementNode * Multiply Node
+        [Test]
+        public void TestEvaluate330()
+        {
+            // input : (x*(2*x))
+            // output: 2x^2
+
+            var elementNode = new ElementNode("x");
+
+            var nodeChild = new MultiplyNode();
+            nodeChild.AddElement(new ElementNode("2"));
+            nodeChild.AddElement(new ElementNode("x"));
+
+            var resultNode = nodeChild.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("2*x^2"));
+        }
+
+        [Test]
+        public void TestEvaluate331()
+        {
+            // input : (x*(x*x))
+            // output: x^3+2*x
+
+            var elementNode = new ElementNode("x");
+
+            var node = new MultiplyNode();
+            node.AddElement(new ElementNode("x"));
+            node.AddElement(new ElementNode("x"));
+
+            var resultNode = node.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x^3"));
+        }
+
+        [Test]
+        public void TestEvaluate332()
+        {
+            // input : (x*(x*(x+2)))
+            // output: x^3+2*x^2
+
+            var elementNode = new ElementNode("x");
+
+            var multiplyNode = new MultiplyNode();
+            multiplyNode.AddElement(new ElementNode("x"));
+
+            var addNodeChild2 = new AddNode();
+            addNodeChild2.AddElement(new ElementNode("x"));
+            addNodeChild2.AddElement(new ElementNode("2"));
+            multiplyNode.AddElement(addNodeChild2);
+
+            var resultNode = multiplyNode.Accept(new Evaluation.ElementNodeMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x^3+2*x^2"));
+        }
+
+
+        // Test others
         [Test]
         public void TestEvaluate111()
         {
@@ -264,10 +468,117 @@ namespace Expression.Tests
             addNodeChild.AddElement(new ElementNode("x"));
             addNodeChild.AddElement(new ElementNode("1"));
 
-            var resultNode = addNodeChild.Accept(new Evaluation.ExpressionOperateMultiplyVisitor(elementNode));
+            var resultNode = addNodeChild.Accept(new Evaluation.ExpressionMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x^2+x"));
+        }
+
+        [Test]
+        public void TestEvaluate112()
+        {
+            // input : x*x
+            // output: x^2
+
+            var elementNode = new ElementNode("x");
+            var resultNode = elementNode.Accept(new Evaluation.ExpressionMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x^2"));
+        }
+
+        [Test]
+        public void TestEvaluate113()
+        {
+            // input : x*(2*x)
+            // output: 2x^2
+
+            var elementNode = new ElementNode("x");
+
+            var nodeChild = new MultiplyNode();
+            nodeChild.AddElement(new ElementNode("2"));
+            nodeChild.AddElement(new ElementNode("x"));
+
+            var resultNode = nodeChild.Accept(new Evaluation.ExpressionMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("2*x^2"));
+        }
+
+        [Test]
+        public void TestEvaluate114()
+        {
+            // input : (x*((x*x)+2))
+            // output: x^3+2*x
+
+            var elementNode = new ElementNode("x");
+
+            var nodeChild = new MultiplyNode();
+            nodeChild.AddElement(new ElementNode("x"));
+            nodeChild.AddElement(new ElementNode("x"));
+
+            var addNodeChild = new AddNode();
+            addNodeChild.AddElement(nodeChild);
+            addNodeChild.AddElement(new ElementNode("2"));
+
+            var resultNode = addNodeChild.Accept(new Evaluation.ExpressionMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x^3+2*x"));
+        }
 
 
-            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x+5"));
+        [Test]
+        public void TestEvaluate115()
+        {
+            // input : (x*((x*x+2)+2))
+            // output: x^3+4*x
+
+            var elementNode = new ElementNode("x");
+
+            var nodeChild = new MultiplyNode();
+            nodeChild.AddElement(new ElementNode("x"));
+            nodeChild.AddElement(new ElementNode("x"));
+
+            var addNodeChild2 = new AddNode();
+            addNodeChild2.AddElement(nodeChild);
+            addNodeChild2.AddElement(new ElementNode("2"));
+
+            var addNode = new AddNode();
+            addNode.AddElement(addNodeChild2);
+            addNode.AddElement(new ElementNode("2"));
+
+            var resultNode = addNode.Accept(new Evaluation.ExpressionMultiplyVisitor(elementNode));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("x^3+4*x")); // currently output x^3+2*x+2*x
+        }
+
+
+        [Test]
+        public void TestEvaluate1114()
+        {
+            // input : ((x+1)*(x+2))
+            // output: x^2+3*x+2
+
+            var addNodeChild1 = new AddNode();
+            addNodeChild1.AddElement(new ElementNode("x"));
+            addNodeChild1.AddElement(new ElementNode("1"));
+
+            var addNodeChild2 = new AddNode();
+            addNodeChild2.AddElement(new ElementNode("x"));
+            addNodeChild2.AddElement(new ElementNode("2"));
+
+            var resultNode = addNodeChild1.Accept(new Evaluation.ExpressionMultiplyVisitor(addNodeChild2));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("2*x^2")); // currently output: (x^2+2*x)+(x+2)
+        }
+
+        [Test]
+        public void TestEvaluate1115()
+        {
+            // input : ((x+1)*(x+2))
+            // output: x^2+3*x+2
+
+            var addNodeChild1 = new AddNode();
+            addNodeChild1.AddElement(new ElementNode("x"));
+            addNodeChild1.AddElement(new ElementNode("1"));
+
+            var addNodeChild2 = new AddNode();
+            addNodeChild2.AddElement(new ElementNode("x"));
+            addNodeChild2.AddElement(new ElementNode("2"));
+
+            var resultNode = addNodeChild1.Accept(new Evaluation.ExpressionMultiplyVisitor(addNodeChild2));
+            Assert.That(Evaluation.EvaluateExpression(resultNode), Is.EqualTo("2*x^2"));
         }
     }
 }

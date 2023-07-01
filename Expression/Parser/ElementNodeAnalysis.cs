@@ -20,28 +20,44 @@ public static class ElementNodeAnalysis
         var nodeModel = new NodeModel();
         var valueStr = node.Value;
 
-        // we only have x, 2*x, or 3*x or <number>*x or 2*x^3
-        var components = valueStr.Split('*');
-        if (components.Length > 2) throw new InvalidOperationException($"Wrong format for node : {node.Value}");
-
-        if (components.Length == 2)
+        if (valueStr.Length > 1)
         {
-            if (!components[1].Contains(Evaluation.VARIABLE)) throw new InvalidOperationException($"Wrong format for node : {node.Value}");
+            // we only have x, 2*x, or 3*x or <number>*x or 2*x^3
+            var components = valueStr.Split('*');
+            if (components.Length > 2) throw new InvalidOperationException($"Wrong format for node : {node.Value}");
 
-            nodeModel.Counter = int.Parse(components[0]);
+            if (components.Length == 2)
+            {
+                if (!components[1].Contains(Evaluation.VARIABLE)) throw new InvalidOperationException($"Wrong format for node : {node.Value}");
+
+                nodeModel.Counter = int.Parse(components[0]);
+                nodeModel.WithVariable = true;
+            }
+
+            // we can have x^2, or x^3 or 2*x^3
+            var powerComponent = valueStr.Split('^');
+            if (powerComponent.Length > 2) throw new InvalidOperationException($"Wrong format for node : {node.Value}");
+
+            if (powerComponent.Length == 2)
+            {
+                if (!powerComponent[0].Contains(Evaluation.VARIABLE)) throw new InvalidOperationException($"Wrong format for node : {node.Value}");
+
+                nodeModel.Power = int.Parse(powerComponent[1]);
+                nodeModel.WithVariable = true;
+            }
+
+            return nodeModel;
+        }
+       
+        // If the node length is 1 => either variable or number only
+        // no *, no ^
+        if (valueStr == Evaluation.VARIABLE)
+        {
             nodeModel.WithVariable = true;
         }
-
-        // we can have x^2, or x^3
-        var powerComponent = valueStr.Split('^');
-        if (powerComponent.Length > 2) throw new InvalidOperationException($"Wrong format for node : {node.Value}");
-
-        if (powerComponent.Length == 2)
+        else
         {
-            if (!powerComponent[0].Contains(Evaluation.VARIABLE)) throw new InvalidOperationException($"Wrong format for node : {node.Value}");
-
-            nodeModel.Power = int.Parse(powerComponent[1]);
-            nodeModel.WithVariable = true;
+            nodeModel.Counter = int.Parse(valueStr);
         }
 
         return nodeModel;
@@ -91,10 +107,24 @@ public static class ElementNodeAnalysis
 
         public INodeModel MultiplyModel(INodeModel model)
         {
-            return new NodeModel()
+            int resultPower;
+            if (WithVariable && model.WithVariable)
+            {
+                resultPower = Power + model.Power;
+            } 
+            else if (!WithVariable && !model.WithVariable)
+            {
+                resultPower = 1;
+            }
+            else
+            {
+                resultPower = Power * model.Power; 
+            }
+
+            return new NodeModel
             {
                 Counter = Counter * model.Counter,
-                Power = Power + model.Power,
+                Power = resultPower,
                 WithVariable = WithVariable || model.WithVariable,
             };
         }
