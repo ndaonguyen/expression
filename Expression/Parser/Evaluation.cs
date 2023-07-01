@@ -1,11 +1,15 @@
 ﻿using Expression.ExpressionNode;
+using System.Runtime.CompilerServices;
 using System.Text;
 
+[assembly: InternalsVisibleTo("Expression.Tests")]
 namespace Expression.Parser;
 
-public abstract class Evaluation
+public static class Evaluation
 {
     public const string VARIABLE = "x";
+    
+
     public static string EvaluateExpression(ExpressionNode.ExpressionNode expressionNode)
     {
         return expressionNode.Accept(new EvaluateExpressionVisitor());
@@ -29,35 +33,6 @@ public abstract class Evaluation
 
             result.Length--; // Remove the last '+'
             return result.ToString();
-
-            /*var result = new StringBuilder();
-            var resultSimplify = node.Accept(new ExpressionPlusSimplifyVisitor());
-            var variableCount = resultSimplify.Variable.Count;
-
-            if (resultSimplify.IsSimplify)
-            {
-                if (variableCount == 1)
-                {
-                    result.Append(VARIABLE);
-                }
-                else
-                {
-                    result.Append($"{variableCount}*{VARIABLE}");
-                }
-                
-                result.Append("+");
-                result.Append(resultSimplify.SimplifyPlus.ToString());
-                return result.ToString();
-            }
-
-            foreach (var childNode in node.Expressions)
-            {
-                result.Append(childNode.Accept(this));
-                result.Append("+");
-            }
-
-            result.Length--; // Remove the last '+'
-            return result.ToString();*/
         }
 
         public string Visit(MultiplyNode node)
@@ -81,46 +56,71 @@ public abstract class Evaluation
             }
             result.Length--; // Remove the last '*'
             return result.ToString();
+        }
 
-            /*var resultSimplify = node.Accept(new ExpressionMultiplySimplifyVisitor());
-            var result = new StringBuilder();
+        
+    }
 
-            var variableCount = resultSimplify.Variable.Count;
+    internal class ExpressionOperateMultiplyVisitor : IExpressionNodeVisitor<ExpressionNode.ExpressionNode>
+    {
+        private readonly ElementNode _nodeToOperate;
 
-            if (resultSimplify.IsSimplify)
+        public ExpressionOperateMultiplyVisitor(ElementNode nodeToOperate)
+        {
+            _nodeToOperate = nodeToOperate ?? throw new ArgumentNullException(nameof(nodeToOperate));
+        }
+
+        public ExpressionNode.ExpressionNode Visit(ElementNode node)
+        {
+            return ElementNodeAnalysis.CombineForMultiply(_nodeToOperate, node);
+        }
+
+        public ExpressionNode.ExpressionNode Visit(AddNode node)
+        {
+            var newAddNode = new AddNode();
+
+            foreach (var childExpression in node.Expressions)
             {
-                if (variableCount == 1)
+                newAddNode.AddElement(childExpression.Accept(new ExpressionOperateMultiplyVisitor(_nodeToOperate)));
+                /*if (childExpression is ElementNode childElementNode) // ndnguyen this break extension ability
                 {
-                    result.Append(VARIABLE);
+                    newAddNode.AddElement(ElementNodeAnalysis.CombineForMultiply(_nodeToOperate, childElementNode));
                 }
-                else
+                else if (childExpression is AddNode childAddNode)
                 {
-                    result.Append($"{variableCount}*{VARIABLE}");
+                    newAddNode.AddElement(childAddNode.Accept(new ExpressionOperateMultiplyVisitor(_nodeToOperate)));
                 }
-                result.Append("*");
-                result.Append(resultSimplify.SimplifyMultiply.ToString());
-                return result.ToString();
+                else if (childExpression is MultiplyNode childNode)
+                {
+                    newAddNode.AddElement(childNode.Accept(new ExpressionOperateMultiplyVisitor(_nodeToOperate)));
+                }*/
             }
 
-            var checkExpressionWithBracket = new ExpressionWithBracketVisitor();
-            foreach (var childNode in node.Expressions)
+            return newAddNode;
+        }
+
+        public ExpressionNode.ExpressionNode Visit(MultiplyNode node)
+        {
+            var newNode = new MultiplyNode();
+
+            foreach (var childExpression in node.Expressions)
             {
-                var nodeResult = childNode.Accept(this);
-                if (childNode.Accept(checkExpressionWithBracket))
+                newNode.AddElement(childExpression.Accept(new ExpressionOperateMultiplyVisitor(_nodeToOperate)));
+                /*if (childExpression is ElementNode childElementNode)
                 {
-                    result.Append('(');
-                    result.Append(nodeResult);
-                    result.Append(')');
+                    newNode.AddElement(ElementNodeAnalysis.CombineForMultiply(_nodeToOperate, childElementNode));
                 }
-                else
+                else if (childExpression is AddNode childAddNode)
                 {
-                    result.Append(nodeResult);
+                    newNode.AddElement(childAddNode.Accept(new ExpressionOperateMultiplyVisitor(_nodeToOperate)));
                 }
-                result.Append('*');
+                else if (childExpression is MultiplyNode childNode)
+                {
+                    newNode.AddElement(childNode.Accept(new ExpressionOperateMultiplyVisitor(_nodeToOperate)));
+                }*/
             }
-            result.Length--; // Remove the last '*'
-            return result.ToString();
-            */
+
+            return newNode;
         }
     }
 

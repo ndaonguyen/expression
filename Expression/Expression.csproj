@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <Folder Include="ExpressionNode\" />
-    <Folder Include="Parser\" />
+    <Folder Include="Interface\" />
   </ItemGroup>
 
 </Project>

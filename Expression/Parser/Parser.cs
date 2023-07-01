@@ -4,12 +4,12 @@ namespace Expression.Parser;
 
 public static class Parser
 {
-    public static TryResults<ExpressionNode.ExpressionNode> ParseExpression(string expression)
+    public static TryResults<ExpressionNode.ExpressionNode> TryParseExpression(string expression)
     {
         var index = 0;
         var stack = new Stack<char>();
 
-        var expressionNode = ParseExprInternal(expression, stack, ref index);
+        var expressionNode = TryParseExprInternal(expression, stack, ref index);
         if (expressionNode.Failed)
         {
             return TryResults<ExpressionNode.ExpressionNode>.Fail(expressionNode.ErrorMessage);
@@ -24,7 +24,7 @@ public static class Parser
     }
 
 
-    private static TryResults<ExpressionNode.ExpressionNode> ParseExpressionTerm(string expression, Stack<char> stack, ref int index)
+    private static TryResults<ExpressionNode.ExpressionNode> TryParseExpressionTerm(string expression, Stack<char> stack, ref int index)
     {
         if (expression == null) throw new ArgumentNullException(nameof(expression));
         if (stack == null) throw new ArgumentNullException(nameof(stack));
@@ -46,18 +46,18 @@ public static class Parser
         {
             index++;
             stack.Push(c);
-            return ParseExprInternal(expression, stack, ref index);
+            return TryParseExprInternal(expression, stack, ref index);
         }
 
         return TryResults<ExpressionNode.ExpressionNode>.Fail("Invalid character: " + c);
     }
 
-    private static TryResults<ExpressionNode.ExpressionNode> ParseExprInternal(string expression, Stack<char> stack, ref int index)
+    private static TryResults<ExpressionNode.ExpressionNode> TryParseExprInternal(string expression, Stack<char> stack, ref int index)
     {
         if (expression == null) throw new ArgumentNullException(nameof(expression));
         if (stack == null) throw new ArgumentNullException(nameof(stack));
 
-        var nodeResult = ParseExpressionTerm(expression, stack, ref index);
+        var nodeResult = TryParseExpressionTerm(expression, stack, ref index);
         if (nodeResult.Failed)
         {
             return nodeResult;
@@ -71,7 +71,7 @@ public static class Parser
             {
                 index++;
 
-                var nextNode = ParseExpressionTerm(expression, stack, ref index);
+                var nextNode = TryParseExpressionTerm(expression, stack, ref index);
                 if (nextNode.Failed)
                 {
                     return nextNode;
@@ -96,7 +96,7 @@ public static class Parser
             {
                 index++;
 
-                var nextNode = ParseExpressionTerm(expression, stack, ref index);
+                var nextNode = TryParseExpressionTerm(expression, stack, ref index);
                 if (nextNode.Failed)
                 {
                     return nextNode;

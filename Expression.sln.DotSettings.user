@@ -11,5 +11,6 @@
       &lt;TestId&gt;NUnit3x::6565CA02-E33A-49AE-9DA5-97902FDEA060::net6.0::Expression.Tests.EvaluateExpressionTest&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
     &lt;ProjectFile&gt;6565CA02-E33A-49AE-9DA5-97902FDEA060/f:ParseExpressionTest.cs&lt;/ProjectFile&gt;&#xD;
+    &lt;ProjectFile&gt;6565CA02-E33A-49AE-9DA5-97902FDEA060/f:AnalyzeTest.cs&lt;/ProjectFile&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
