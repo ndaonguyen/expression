@@ -13,13 +13,21 @@ public static class Evaluation
 
     public static string EvaluateExpression(ExpressionNode.ExpressionNode expressionNode)
     {
-        return expressionNode.Accept(new PrintExpressionVisitor());
+        return expressionNode.Accept(new EvaluationExpressionVisitor());
     }
 
     private class PrintExpressionVisitor : IExpressionNodeVisitor<string>
     {
+        private readonly SimplifyClass _simplifyClass;
+
+        public PrintExpressionVisitor(SimplifyClass simplifyClass)
+        {
+            _simplifyClass = simplifyClass ?? throw new ArgumentNullException(nameof(simplifyClass));
+        }
+
         public string Visit(ElementNode node)
         {
+            _simplifyClass.AddNode(node);
             return node.Value;
         }
 
@@ -38,29 +46,11 @@ public static class Evaluation
 
         public string Visit(MultiplyNode node)
         {
-            var result = new StringBuilder();
-            var checkExpressionWithBracket = new ExpressionWithBracketVisitor();
-            foreach (var childNode in node.Expressions)
-            {
-                var nodeResult =  childNode.Accept(this);
-                if (childNode.Accept(checkExpressionWithBracket))
-                {
-                    result.Append('(');
-                    result.Append(nodeResult);
-                    result.Append(')');
-                }
-                else
-                {
-                    result.Append(nodeResult);
-                }
-                result.Append('*');
-            }
-            result.Length--; // Remove the last '*'
-            return result.ToString();
+            throw new NotSupportedException("At this stage shouldn't have MultiplyNode anymore");
         }
     }
 
-    public class EvaluationExpressionVisitor : IExpressionNodeVisitor<string>
+    private class EvaluationExpressionVisitor : IExpressionNodeVisitor<string>
     {
         private readonly SimplifyClass _simplifyClass;
         public EvaluationExpressionVisitor()
@@ -70,7 +60,7 @@ public static class Evaluation
 
         public string Visit(ElementNode node)
         {
-            return node.ToString()!;
+            return node.Value;
         }
 
         public string Visit(AddNode node)
@@ -101,26 +91,31 @@ public static class Evaluation
             {
                 result = result == null 
                     ? childNode // first node
-                    : result.Accept(new ExpressionMultiplyVisitor(childNode));
+                    : result.Accept(new ExpressionMultiplyVisitor(childNode, _simplifyClass));
             }
 
             var resultNode = result ?? new MultiplyNode();
-            return resultNode.Accept(new PrintExpressionVisitor());
+            resultNode.Accept(new PrintExpressionVisitor(_simplifyClass));
+            return _simplifyClass.ToString();
         }
     }
 
     private class ExpressionMultiplyVisitor : IExpressionNodeVisitor<ExpressionNode.ExpressionNode>
     {
         private readonly ExpressionNode.ExpressionNode _nodeToOperate;
+        private readonly SimplifyClass _simplifyClass;
 
-        public ExpressionMultiplyVisitor(ExpressionNode.ExpressionNode nodeToOperate)
+        public ExpressionMultiplyVisitor(
+            ExpressionNode.ExpressionNode nodeToOperate, 
+            SimplifyClass simplifyClass)
         {
             _nodeToOperate = nodeToOperate ?? throw new ArgumentNullException(nameof(nodeToOperate));
+            _simplifyClass = simplifyClass ?? throw new ArgumentNullException(nameof(simplifyClass));
         }
 
         public ExpressionNode.ExpressionNode Visit(ElementNode node)
         {
-            return _nodeToOperate.Accept(new ElementNodeMultiplyVisitor(node));
+            return _nodeToOperate.Accept(new ElementNodeMultiplyVisitor(node, _simplifyClass));
         }
 
         public ExpressionNode.ExpressionNode Visit(AddNode node)
@@ -129,7 +124,7 @@ public static class Evaluation
 
             foreach (var childExpression in node.Expressions)
             {
-                var result = childExpression.Accept(new ExpressionMultiplyVisitor(_nodeToOperate));
+                var result = childExpression.Accept(new ExpressionMultiplyVisitor(_nodeToOperate, _simplifyClass));
                 newAddNode.AddElement(result);
             }
 
@@ -141,7 +136,7 @@ public static class Evaluation
             var nodeToMultiple = _nodeToOperate; // assign this to continue multiply next node
             foreach (var childExpression in node.Expressions)
             {
-                nodeToMultiple = childExpression.Accept(new MultiplyChildVisitor(nodeToMultiple));
+                nodeToMultiple = childExpression.Accept(new MultiplyChildVisitor(nodeToMultiple, _simplifyClass));
             }
 
             return nodeToMultiple;
@@ -152,15 +147,18 @@ public static class Evaluation
     private class ElementNodeMultiplyVisitor : IExpressionNodeVisitor<ExpressionNode.ExpressionNode>
     {
         private readonly ElementNode _nodeToOperate;
+        private readonly SimplifyClass _simplifyClass;
 
-        public ElementNodeMultiplyVisitor(ElementNode nodeToOperate)
+        public ElementNodeMultiplyVisitor(ElementNode nodeToOperate, SimplifyClass simplifyClass)
         {
             _nodeToOperate = nodeToOperate ?? throw new ArgumentNullException(nameof(nodeToOperate));
+            _simplifyClass = simplifyClass ?? throw new ArgumentNullException(nameof(simplifyClass));
         }
 
         public ExpressionNode.ExpressionNode Visit(ElementNode node)
         {
             var result = ElementNodeAnalysis.CombineForMultiply(_nodeToOperate, node);
+            //_simplifyClass.AddNode(result);
             return result;
         }
 
@@ -170,7 +168,7 @@ public static class Evaluation
 
             foreach (var childExpression in node.Expressions)
             {
-                var result = childExpression.Accept(new ElementNodeMultiplyVisitor(_nodeToOperate));
+                var result = childExpression.Accept(new ElementNodeMultiplyVisitor(_nodeToOperate, _simplifyClass));
                 newAddNode.AddElement(result);
             }
 
@@ -182,7 +180,7 @@ public static class Evaluation
             ExpressionNode.ExpressionNode nodeToMultiple = _nodeToOperate; // assign this to continue multiply next node
             foreach (var childExpression in node.Expressions)
             {
-                nodeToMultiple = childExpression.Accept(new MultiplyChildVisitor(nodeToMultiple));
+                nodeToMultiple = childExpression.Accept(new MultiplyChildVisitor(nodeToMultiple, _simplifyClass));
                 /*if (childExpression is ElementNode childElementNode) // ndnguyen this break extension ability
                 {
                     nodeToMultiple = nodeToMultiple.Accept(new ElementNodeMultiplyVisitor(childElementNode));
@@ -204,44 +202,27 @@ public static class Evaluation
     private class MultiplyChildVisitor : IExpressionNodeVisitor<ExpressionNode.ExpressionNode>
     {
         private readonly ExpressionNode.ExpressionNode _nodeToMultiple;
+        private readonly SimplifyClass _simplifyClass;
 
-        public MultiplyChildVisitor(ExpressionNode.ExpressionNode nodeToMultiple)
+        public MultiplyChildVisitor(ExpressionNode.ExpressionNode nodeToMultiple, SimplifyClass simplifyClass)
         {
-            _nodeToMultiple = nodeToMultiple;
+            _nodeToMultiple = nodeToMultiple ?? throw new ArgumentNullException(nameof(nodeToMultiple));
+            _simplifyClass = simplifyClass ?? throw new ArgumentNullException(nameof(simplifyClass));
         }
 
         public ExpressionNode.ExpressionNode Visit(ElementNode node)
         {
-            return _nodeToMultiple.Accept(new ElementNodeMultiplyVisitor(node));
+            return _nodeToMultiple.Accept(new ElementNodeMultiplyVisitor(node, _simplifyClass));
         }
 
         public ExpressionNode.ExpressionNode Visit(AddNode node)
         {
-            return node.Accept(new ExpressionMultiplyVisitor(_nodeToMultiple));
+            return node.Accept(new ExpressionMultiplyVisitor(_nodeToMultiple, _simplifyClass));
         }
 
         public ExpressionNode.ExpressionNode Visit(MultiplyNode node)
         {
-            return node.Accept(new ExpressionMultiplyVisitor(_nodeToMultiple));
-        }
-    }
-
-
-    private class ExpressionWithBracketVisitor : IExpressionNodeVisitor<bool>
-    {
-        public bool Visit(ElementNode node)
-        {
-            return false;
-        }
-
-        public bool Visit(AddNode node)
-        {
-            return true;
-        }
-
-        public bool Visit(MultiplyNode node)
-        {
-            return true;
+            return node.Accept(new ExpressionMultiplyVisitor(_nodeToMultiple, _simplifyClass));
         }
     }
 }

@@ -25,7 +25,8 @@ public class SimplifyClass
     public override string ToString()
     {
         var stringBuilder = new StringBuilder();
-        var allNodes = _result.Values.OrderBy(x => x.Power).ThenByDescending(x => x.WithVariable).ToList();
+        var re = _result.Values.OrderByDescending(x => x.Power).ToList();
+        var allNodes = _result.Values.OrderByDescending(x => x.Power).ThenByDescending(x => x.WithVariable).ToList();
         foreach (var node in allNodes)
         {
             stringBuilder.Append(node);
