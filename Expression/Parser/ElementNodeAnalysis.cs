@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using Expression.ExpressionNode;
-using Expression.Interface;
 
 [assembly: InternalsVisibleTo("Expression.Tests")]
 namespace Expression.Parser;
@@ -13,7 +12,7 @@ public static class ElementNodeAnalysis
     /// "Key": ADD => Value: Dictionary("x", "1")
     /// "Key": MULTIPLY => Value: Dictionary("x", "1")   
     /// </summary>
-    internal static INodeModel AnalyzeNode(ElementNode node)
+    internal static NodeModel AnalyzeNode(ElementNode node)
     {
         if (node == null) throw new ArgumentNullException(nameof(node));
 
@@ -63,13 +62,13 @@ public static class ElementNodeAnalysis
         return nodeModel;
     }
 
-    internal class NodeModel : INodeModel
+    internal class NodeModel
     {
         /// <summary>
         /// If the elementNode is 2*x^2 => counter is 2, power is 2
         ///                         x^3 => counter is 1, power is 3
         /// </summary>
-
+        private const string NO_VARIABLE_KEY = "NO_VARIABLE";
         public NodeModel()
         {
             Counter = 1;
@@ -90,11 +89,11 @@ public static class ElementNodeAnalysis
             return WithVariable == other.WithVariable && Power == other.Power;
         }
 
-        public TryResults<INodeModel> TryAddModel(INodeModel model)
+        public TryResults<NodeModel> TryAddModel(NodeModel model)
         {
             if (EqualsBase(model))
             {
-                return TryResults<INodeModel>.Succeed(new NodeModel
+                return TryResults<NodeModel>.Succeed(new NodeModel
                 {
                     Counter = Counter + model.Counter,
                     Power = Power,
@@ -102,10 +101,10 @@ public static class ElementNodeAnalysis
                 });
             }
 
-            return TryResults<INodeModel>.Fail("Not the same base, not able to add together");
+            return TryResults<NodeModel>.Fail("Not the same base, not able to add together");
         }
 
-        public INodeModel MultiplyModel(INodeModel model)
+        public NodeModel MultiplyModel(NodeModel model)
         {
             int resultPower;
             if (WithVariable && model.WithVariable)
@@ -141,6 +140,13 @@ public static class ElementNodeAnalysis
 
             return Counter.ToString();
         }
+
+        public string NodeKey()
+        {
+            return WithVariable == false
+                ? NO_VARIABLE_KEY
+                : (Power == 1 ? Evaluation.VARIABLE : $"{Evaluation.VARIABLE}^{Power}");
+        }
     }
 
     internal static TryResults<ElementNode> TryCombineForAdd(ElementNode node1, ElementNode node2)
@@ -153,7 +159,7 @@ public static class ElementNodeAnalysis
         var addResult = nodeModel1.TryAddModel(nodeModel2);
         if (addResult.Success)
         {
-            return TryResults<ElementNode>.Succeed(new ElementNode(addResult.Value!.ToString()));
+            return TryResults<ElementNode>.Succeed(new ElementNode(addResult.Value!.ToString()!));
         }
 
         return TryResults<ElementNode>.Fail("Can't group");

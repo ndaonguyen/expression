@@ -1,4 +1,4 @@
-﻿using Expression.ExpressionNode;
+﻿/*using Expression.ExpressionNode;
 using System.Runtime.CompilerServices;
 using System.Text;
 using ElementNode = Expression.ExpressionNode.ElementNode;
@@ -9,7 +9,7 @@ namespace Expression.Parser;
 public static class Evaluation
 {
     public const string VARIABLE = "x";
-    
+
 
     public static string EvaluateExpression(ExpressionNode.ExpressionNode expressionNode)
     {
@@ -42,7 +42,7 @@ public static class Evaluation
             var checkExpressionWithBracket = new ExpressionWithBracketVisitor();
             foreach (var childNode in node.Expressions)
             {
-                var nodeResult =  childNode.Accept(this);
+                var nodeResult = childNode.Accept(this);
                 if (childNode.Accept(checkExpressionWithBracket))
                 {
                     result.Append('(');
@@ -60,7 +60,7 @@ public static class Evaluation
         }
     }
 
-    public class EvaluationExpressionVisitor : IExpressionNodeVisitor<string>
+    public class EvaluationExpressionVisitor : IExpressionNodeVisitor<ExpressionNode.ExpressionNode>
     {
         private readonly SimplifyClass _simplifyClass;
         public EvaluationExpressionVisitor()
@@ -68,44 +68,46 @@ public static class Evaluation
             _simplifyClass = new SimplifyClass();
         }
 
-        public string Visit(ElementNode node)
+        public ExpressionNode.ExpressionNode Visit(ElementNode node)
         {
-            return node.ToString()!;
+            return node;
         }
 
-        public string Visit(AddNode node)
+        public ExpressionNode.ExpressionNode Visit(AddNode node)
         {
+            var resultNode = new AddNode();
             foreach (var childNode in node.Expressions)
             {
                 if (childNode is ElementNode childElementNode)
                 {
                     _simplifyClass.AddNode(childElementNode);
+                    resultNode.AddElement(childElementNode);
                 }
                 else if (childNode is AddNode childAddNode)
                 {
-                    childAddNode.Accept(this);
+                    resultNode.AddElement(childAddNode.Accept(this));
                 }
                 else if (childNode is MultiplyNode childMultiplyNode)
                 {
-                    childMultiplyNode.Accept(this);
+                    resultNode.AddElement(childMultiplyNode.Accept(this));
                 }
             }
 
-            return _simplifyClass.ToString();
+            _simplifyClass.ToString();
+            return resultNode;
         }
 
-        public string Visit(MultiplyNode node)
+        public ExpressionNode.ExpressionNode Visit(MultiplyNode node)
         {
             ExpressionNode.ExpressionNode? result = null;
             foreach (var childNode in node.Expressions)
             {
-                result = result == null 
+                result = result == null
                     ? childNode // first node
                     : result.Accept(new ExpressionMultiplyVisitor(childNode));
             }
 
-            var resultNode = result ?? new MultiplyNode();
-            return resultNode.Accept(new PrintExpressionVisitor());
+            return result ?? new MultiplyNode();
         }
     }
 
@@ -194,7 +196,7 @@ public static class Evaluation
                 else if (childExpression is MultiplyNode childNode)
                 {
                     nodeToMultiple = childNode.Accept(new ExpressionMultiplyVisitor(nodeToMultiple));
-                }*/
+                }#1#
             }
 
             return nodeToMultiple;
@@ -244,4 +246,102 @@ public static class Evaluation
             return true;
         }
     }
-}
+
+    private class ExpressionPlusSimplifyVisitor : IExpressionNodeVisitor<ExpressionPlusSimplifyVisitor>
+    {
+        public ExpressionPlusSimplifyVisitor(int? simplifyPlus = null, List<string>? variable = null)
+        {
+            SimplifyPlus = simplifyPlus ?? 0;
+            Variable = variable ?? new List<string>();
+            IsSimplify = false;
+        }
+
+        public List<string> Variable { get; private set; }
+        public int? SimplifyPlus { get; private set; }
+        public bool IsSimplify { get; private set; }
+
+
+        public ExpressionPlusSimplifyVisitor Visit(ElementNode node)
+        {
+            var value = node.Value;
+            if (value == VARIABLE)
+            {
+                Variable.Add(VARIABLE);
+                return this;
+            }
+
+            if (int.TryParse(value, out var intValue))
+            {
+                SimplifyPlus += intValue;
+                IsSimplify = true;
+                return this;
+            }
+
+            throw new InvalidOperationException("Value is not correct format");
+        }
+
+        public ExpressionPlusSimplifyVisitor Visit(AddNode node)
+        {
+            foreach (var childNode in node.Expressions)
+            {
+                childNode.Accept(this);
+            }
+
+            return this;
+        }
+
+        public ExpressionPlusSimplifyVisitor Visit(MultiplyNode node)
+        {
+            return this;
+        }
+    }
+
+    private class ExpressionMultiplySimplifyVisitor : IExpressionNodeVisitor<ExpressionMultiplySimplifyVisitor>
+    {
+        public ExpressionMultiplySimplifyVisitor(int? simplifyMultiply = null, List<string>? variable = null)
+        {
+            SimplifyMultiply = simplifyMultiply ?? 1;
+            Variable = variable ?? new List<string>();
+            IsSimplify = false;
+        }
+
+        public List<string> Variable { get; private set; }
+        public int? SimplifyMultiply { get; private set; }
+        public bool IsSimplify { get; private set; }
+
+        public ExpressionMultiplySimplifyVisitor Visit(ElementNode node)
+        {
+            var value = node.Value;
+            if (value == VARIABLE)
+            {
+                Variable.Add(VARIABLE);
+                return this;
+            }
+
+            if (int.TryParse(value, out var intValue))
+            {
+                SimplifyMultiply *= intValue;
+                IsSimplify = true;
+                return this;
+            }
+
+            throw new InvalidOperationException("Value is not correct format");
+        }
+
+        public ExpressionMultiplySimplifyVisitor Visit(AddNode node)
+        {
+            return this;
+        }
+
+        public ExpressionMultiplySimplifyVisitor Visit(MultiplyNode node)
+        {
+            foreach (var childNode in node.Expressions)
+            {
+                childNode.Accept(this);
+            }
+
+            return this;
+        }
+    }
+
+}*/

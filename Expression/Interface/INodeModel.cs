@@ -1,4 +1,4 @@
-﻿using Expression.Parser;
+﻿/*using Expression.Parser;
 
 namespace Expression.Interface;
 
@@ -10,4 +10,4 @@ public interface INodeModel
 
     TryResults<INodeModel> TryAddModel(INodeModel model);
     public INodeModel MultiplyModel(INodeModel model);
-}
+}*/
