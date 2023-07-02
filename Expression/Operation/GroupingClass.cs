@@ -1,11 +1,11 @@
 ﻿using System.Text;
-using Expression.ExpressionNode;
+using Expression.Model;
 
-namespace Expression.Parser;
+namespace Expression.Operation;
 
-public class SimplifyClass
+public class GroupingClass
 {
-    private Dictionary<string, ElementNodeAnalysis.NodeModel> _result = new();
+    private readonly Dictionary<string, ElementNodeAnalysis.NodeModel> _result = new();
 
     public void AddNode(ElementNode node)
     {
@@ -14,6 +14,10 @@ public class SimplifyClass
 
         if (_result.TryGetValue(nodeKey, out var nodeModel))
         {
+            if (!nodeModel.WithVariable)
+            {
+                var a = 0;
+            }
             nodeModel.Counter += analyzeNode.Counter;
         }
         else

@@ -1,5 +1,5 @@
-using Expression.ExpressionNode;
-using Expression.Parser;
+using Expression.Model;
+using Expression.Operation;
 
 namespace Expression.Tests
 {
@@ -504,7 +504,7 @@ namespace Expression.Tests
         public void TestEvaluate568()
         {
             // input : ((1+2+(2+(3+x))*(1+(2+x))
-            // output:  (x+8)*(x+3) = x^2+11*x+24
+            // output:  (x+8)*(x+3) => x^2+11*x+24
 
             var addNode = new AddNode();
             addNode.AddElement(new ElementNode("1"));
@@ -554,5 +554,166 @@ namespace Expression.Tests
             var resultNode = Evaluation.EvaluateExpression(multiplyNodeParent);
             Assert.That(resultNode, Is.EqualTo("6*x"));
         }
+
+        // test a complicated case
+        [Test]
+        public void TestEvaluate571()
+        {
+            // input : ( ((1+x)*(2+((3+x)*2))) * (3+x))
+            // output:  2*x^3+16*x^2+38*x+24
+
+            //(1+x)
+            var addNode = new AddNode();
+            addNode.AddElement(new ElementNode("1"));
+            addNode.AddElement(new ElementNode("x"));
+
+            //(2+((3+x)*2))
+            var addNodeChild = new AddNode();
+            addNodeChild.AddElement(new ElementNode("2"));
+
+            var addNodeChild2 = new AddNode();
+            addNodeChild2.AddElement(new ElementNode("3"));
+            addNodeChild2.AddElement(new ElementNode("x"));
+
+            var multiplyNodeChild2 = new MultiplyNode();
+            multiplyNodeChild2.AddElement(addNodeChild2);
+            multiplyNodeChild2.AddElement(new ElementNode("2"));
+
+            addNodeChild.AddElement(multiplyNodeChild2);
+            
+            //((1+x)*(2+((3+x)*2)))
+            var multiplyNodeLeft = new MultiplyNode();
+            multiplyNodeLeft.AddElement(addNode);
+            multiplyNodeLeft.AddElement(addNodeChild);
+
+            //(1+(2+x))
+            var addNodeRightChild = new AddNode();
+            addNodeRightChild.AddElement(new ElementNode("3"));
+            addNodeRightChild.AddElement(new ElementNode("x"));
+
+            //(((1+x)*(2+((3+x)*2)))*((2+x)))
+            var multiplyChild = new MultiplyNode();
+            multiplyChild.AddElement(multiplyNodeLeft);
+            multiplyChild.AddElement(addNodeRightChild);
+
+            var resultNode = Evaluation.EvaluateExpression(multiplyChild);
+            Assert.That(resultNode, Is.EqualTo("2*x^3+16*x^2+38*x+24"));
+        }
+
+        // test a complicated case 2
+        [Test]
+        public void TestEvaluate572()
+        {
+            // input : ((1+x)*(2+((3+x)*2)))
+            // output:  2*x^2+10*x+8
+
+            //(1+x)
+            var addNode = new AddNode();
+            addNode.AddElement(new ElementNode("1"));
+            addNode.AddElement(new ElementNode("x"));
+
+            //(2+((3+x)*2))
+            var addNodeChild = new AddNode();
+            addNodeChild.AddElement(new ElementNode("2"));
+
+            var addNodeChild2 = new AddNode();
+            addNodeChild2.AddElement(new ElementNode("3"));
+            addNodeChild2.AddElement(new ElementNode("x"));
+
+            var multiplyNodeChild2 = new MultiplyNode();
+            multiplyNodeChild2.AddElement(addNodeChild2);
+            multiplyNodeChild2.AddElement(new ElementNode("2"));
+
+            addNodeChild.AddElement(multiplyNodeChild2);
+
+            //((1+x)*(2+((3+x)*2)))
+            var multiplyNodeLeft = new MultiplyNode();
+            multiplyNodeLeft.AddElement(addNode);
+            multiplyNodeLeft.AddElement(addNodeChild);
+            
+            var resultNode = Evaluation.EvaluateExpression(multiplyNodeLeft);
+            Assert.That(resultNode, Is.EqualTo("2*x^2+10*x+8"));
+        }
+
+        // test a complicated case 3
+        [Test]
+        public void TestEvaluate573()
+        {
+            // input : ((1+x)*(2+((3+x)*2)))*x)
+            // output:  2*x^3+10*x^2+8*x
+
+            //(1+x)
+            var addNode = new AddNode();
+            addNode.AddElement(new ElementNode("1"));
+            addNode.AddElement(new ElementNode("x"));
+
+            //(2+((3+x)*2))
+            var addNodeChild = new AddNode();
+            addNodeChild.AddElement(new ElementNode("2"));
+
+            var addNodeChild2 = new AddNode();
+            addNodeChild2.AddElement(new ElementNode("3"));
+            addNodeChild2.AddElement(new ElementNode("x"));
+
+            var multiplyNodeChild2 = new MultiplyNode();
+            multiplyNodeChild2.AddElement(addNodeChild2);
+            multiplyNodeChild2.AddElement(new ElementNode("2"));
+
+            addNodeChild.AddElement(multiplyNodeChild2);
+
+            //((1+x)*(2+((3+x)*2)))
+            var multiplyNodeLeft = new MultiplyNode();
+            multiplyNodeLeft.AddElement(addNode);
+            multiplyNodeLeft.AddElement(addNodeChild);
+
+            //(((1+x)*(2+((3+x)*2)))*x)
+            var multiplyChild = new MultiplyNode();
+            multiplyChild.AddElement(new ElementNode("x"));
+            multiplyChild.AddElement(multiplyNodeLeft);
+
+            var resultNode = Evaluation.EvaluateExpression(multiplyChild);
+            Assert.That(resultNode, Is.EqualTo("2*x^3+10*x^2+8*x"));
+        }
+
+        // test a complicated case 4
+        [Test]
+        public void TestEvaluate574()
+        {
+            // input : ((1+x)*(2+((3+x)*2)))*3)
+            // output:  6*x^2+30*x+24
+
+            //(1+x)
+            var addNode = new AddNode();
+            addNode.AddElement(new ElementNode("1"));
+            addNode.AddElement(new ElementNode("x"));
+
+            //(2+((3+x)*2))
+            var addNodeChild = new AddNode();
+            addNodeChild.AddElement(new ElementNode("2"));
+
+            var addNodeChild2 = new AddNode();
+            addNodeChild2.AddElement(new ElementNode("3"));
+            addNodeChild2.AddElement(new ElementNode("x"));
+
+            var multiplyNodeChild2 = new MultiplyNode();
+            multiplyNodeChild2.AddElement(addNodeChild2);
+            multiplyNodeChild2.AddElement(new ElementNode("2"));
+
+            addNodeChild.AddElement(multiplyNodeChild2);
+
+            //((1+x)*(2+((3+x)*2)))
+            var multiplyNodeLeft = new MultiplyNode();
+            multiplyNodeLeft.AddElement(addNode);
+            multiplyNodeLeft.AddElement(addNodeChild);
+
+            //(((1+x)*(2+((3+x)*2)))*3)
+            var multiplyChild = new MultiplyNode();
+            multiplyChild.AddElement(multiplyNodeLeft);
+            multiplyChild.AddElement(new ElementNode("3"));
+
+            var resultNode = Evaluation.EvaluateExpression(multiplyChild);
+            Assert.That(resultNode, Is.EqualTo("6*x^2+30*x+24"));
+        }
+
     }
 }

@@ -1,16 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
-using Expression.ExpressionNode;
+using Expression.Model;
 
 [assembly: InternalsVisibleTo("Expression.Tests")]
-namespace Expression.Parser;
+namespace Expression.Operation;
 
 public static class ElementNodeAnalysis
 {
     /// <summary>
     /// Our elementNode in this context can be x, 2*x or x^2
-    /// return Dictionary{
-    /// "Key": ADD => Value: Dictionary("x", "1")
-    /// "Key": MULTIPLY => Value: Dictionary("x", "1")   
     /// </summary>
     internal static NodeModel AnalyzeNode(ElementNode node)
     {
@@ -18,8 +15,8 @@ public static class ElementNodeAnalysis
 
         var nodeModel = new NodeModel();
         var valueStr = node.Value;
-
-        if (valueStr.Length > 1)
+        
+        if (valueStr.Contains('*') || valueStr.Contains('^'))
         {
             // we only have x, 2*x, or 3*x or <number>*x or 2*x^3
             var components = valueStr.Split('*');
@@ -68,7 +65,7 @@ public static class ElementNodeAnalysis
         /// If the elementNode is 2*x^2 => counter is 2, power is 2
         ///                         x^3 => counter is 1, power is 3
         /// </summary>
-        private const string NO_VARIABLE_KEY = "NO_VARIABLE";
+        
         public NodeModel()
         {
             Counter = 1;
@@ -79,30 +76,6 @@ public static class ElementNodeAnalysis
         public int Counter { get; set; }
         public int Power { get; set; }
         public bool WithVariable { get; set; }
-
-        public bool EqualsBase(object? obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
-
-            var other = (NodeModel)obj;
-            return WithVariable == other.WithVariable && Power == other.Power;
-        }
-
-        public TryResults<NodeModel> TryAddModel(NodeModel model)
-        {
-            if (EqualsBase(model))
-            {
-                return TryResults<NodeModel>.Succeed(new NodeModel
-                {
-                    Counter = Counter + model.Counter,
-                    Power = Power,
-                    WithVariable = WithVariable
-                });
-            }
-
-            return TryResults<NodeModel>.Fail("Not the same base, not able to add together");
-        }
 
         public NodeModel MultiplyModel(NodeModel model)
         {
@@ -143,26 +116,11 @@ public static class ElementNodeAnalysis
 
         public string NodeKey()
         {
+            const string NO_VARIABLE_KEY = "NO_VARIABLE";
             return WithVariable == false
                 ? NO_VARIABLE_KEY
                 : (Power == 1 ? Evaluation.VARIABLE : $"{Evaluation.VARIABLE}^{Power}");
         }
-    }
-
-    internal static TryResults<ElementNode> TryCombineForAdd(ElementNode node1, ElementNode node2)
-    {
-        if (node1 == null) throw new ArgumentNullException(nameof(node1));
-        if (node2 == null) throw new ArgumentNullException(nameof(node2));
-
-        var nodeModel1 = AnalyzeNode(node1);
-        var nodeModel2 = AnalyzeNode(node2);
-        var addResult = nodeModel1.TryAddModel(nodeModel2);
-        if (addResult.Success)
-        {
-            return TryResults<ElementNode>.Succeed(new ElementNode(addResult.Value!.ToString()!));
-        }
-
-        return TryResults<ElementNode>.Fail("Can't group");
     }
 
     internal static ElementNode CombineForMultiply(ElementNode node1, ElementNode node2)

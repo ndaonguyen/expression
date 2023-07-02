@@ -1,4 +1,4 @@
-﻿namespace Expression.Parser;
+﻿namespace Expression.Common;
 
 public class TryResults<T, TErrorCode>
 {
@@ -38,31 +38,5 @@ public class TryResults<T> : TryResults<T, int>
     public static TryResults<T> Succeed(T value)
     {
         return new TryResults<T>(value);
-    }
-}
-
-
-public class TryResults
-{
-    public bool Success { get; }
-    public bool Failed => !Success;
-    public string ErrorMessage { get; }
-    public int ErrorCode { get; }
-
-    private TryResults(bool success, string errorMessage, int errorCode)
-    {
-        Success = success;
-        ErrorMessage = errorMessage;
-        ErrorCode = errorCode;
-    }
-
-    public static TryResults Fail(string errorMessage, int errorCode = 0)
-    {
-        return new TryResults(false, errorMessage, errorCode);
-    }
-
-    public static TryResults Succeed()
-    {
-        return new TryResults(true, string.Empty, 0);
     }
 }

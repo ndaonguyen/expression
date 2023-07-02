@@ -1,4 +1,5 @@
-using Expression.ExpressionNode;
+using Expression.Model;
+using Expression.Operation;
 
 namespace Expression.Tests
 {
@@ -14,7 +15,7 @@ namespace Expression.Tests
         {
             // input : x
             // output: ElementNode: x
-            var expressionNode = Parser.Parser.TryParseExpression("x").Value!;
+            var expressionNode = Parser.TryParseExpression("x").Value!;
 
             var isElementNode = expressionNode is ElementNode;
             Assert.That(isElementNode, Is.True);
@@ -26,7 +27,7 @@ namespace Expression.Tests
         {
             // input : 3
             // output: ElementNode:3
-            var expressionNode = Parser.Parser.TryParseExpression("3").Value!;
+            var expressionNode = Parser.TryParseExpression("3").Value!;
 
             var isElementNode = expressionNode is ElementNode;
             Assert.That(isElementNode, Is.True);
@@ -38,7 +39,7 @@ namespace Expression.Tests
         {
             // input : x+3
             // output: AddNode: x+3
-            var expressionNode = Parser.Parser.TryParseExpression("(x+3)").Value!;
+            var expressionNode = Parser.TryParseExpression("(x+3)").Value!;
 
             var isAddNode = expressionNode is AddNode;
             Assert.IsTrue(isAddNode);
@@ -54,7 +55,7 @@ namespace Expression.Tests
         {
             // input : ((x+3)*(x+1))
             // output: multiple node of 2 add nodes (x+3) and (x+1)
-            var expressionNode = Parser.Parser.TryParseExpression("((x+3)*(x+1))").Value!;
+            var expressionNode = Parser.TryParseExpression("((x+3)*(x+1))").Value!;
 
             var isCorrectNode = expressionNode is MultiplyNode;
             Assert.IsTrue(isCorrectNode);
@@ -77,7 +78,7 @@ namespace Expression.Tests
         {
             // input : ((1+2+1)*(1+1)*x)
             // output: multiple node of 3 nodes (1+2+1) and (1+1) and x
-            var expressionNode = Parser.Parser.TryParseExpression("((1+2+1)*(1+1)*x)").Value!;
+            var expressionNode = Parser.TryParseExpression("((1+2+1)*(1+1)*x)").Value!;
 
             var isCorrectNode = expressionNode is MultiplyNode;
             Assert.IsTrue(isCorrectNode);
@@ -103,7 +104,7 @@ namespace Expression.Tests
         {
             // input : (1+(2*x)+1)
             // output: add node of 3 nodes 1 and (2*x) and 1
-            var expressionNode = Parser.Parser.TryParseExpression("(1+(2*x)+1)").Value!;
+            var expressionNode = Parser.TryParseExpression("(1+(2*x)+1)").Value!;
 
             var isCorrectNode = expressionNode is AddNode;
             Assert.IsTrue(isCorrectNode);
@@ -129,7 +130,7 @@ namespace Expression.Tests
             // output: multiply node of 2 nodes
             //          1st node: Add node of 3 node: 1, 2*x and 1
             //          2nd node: Add node of 2 node: x and 1
-            var expressionNode = Parser.Parser.TryParseExpression("((1+(2*x)+1)*(x+1))").Value!;
+            var expressionNode = Parser.TryParseExpression("((1+(2*x)+1)*(x+1))").Value!;
 
             var isCorrectNode = expressionNode is MultiplyNode;
             Assert.IsTrue(isCorrectNode);
@@ -157,7 +158,7 @@ namespace Expression.Tests
         {
             // input : ((x+3)*(x+1)
             // output: fail
-            var expressionNodeResult = Parser.Parser.TryParseExpression("((x+3)*(x+1)");
+            var expressionNodeResult = Parser.TryParseExpression("((x+3)*(x+1)");
             Assert.IsTrue(expressionNodeResult.Failed);
         }
 
@@ -166,7 +167,7 @@ namespace Expression.Tests
         {
             // input : x+3)*(x+1)
             // output: fail
-            var expressionNodeResult = Parser.Parser.TryParseExpression("x+3)*(x+1)");
+            var expressionNodeResult = Parser.TryParseExpression("x+3)*(x+1)");
             Assert.IsTrue(expressionNodeResult.Failed);
         }
 
@@ -175,7 +176,7 @@ namespace Expression.Tests
         {
             // input : (((x+3)*))(x+1)
             // output: fail
-            var expressionNodeResult = Parser.Parser.TryParseExpression("(((x+3)*))(x+1)");
+            var expressionNodeResult = Parser.TryParseExpression("(((x+3)*))(x+1)");
             Assert.IsTrue(expressionNodeResult.Failed);
         }
     }

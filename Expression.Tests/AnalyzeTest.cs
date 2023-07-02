@@ -1,6 +1,6 @@
-using Expression.ExpressionNode;
-using Expression.Parser;
-using static Expression.Parser.ElementNodeAnalysis;
+using Expression.Model;
+using Expression.Operation;
+using static Expression.Operation.ElementNodeAnalysis;
 
 namespace Expression.Tests
 {
@@ -17,6 +17,15 @@ namespace Expression.Tests
             var result = ElementNodeAnalysis.AnalyzeNode(new ElementNode("2"));
             Assert.That(result.WithVariable, Is.EqualTo(false));
             Assert.That(result.Counter, Is.EqualTo(2));
+            Assert.That(result.Power, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void AnalyzeTest11()
+        {
+            var result = ElementNodeAnalysis.AnalyzeNode(new ElementNode("18"));
+            Assert.That(result.WithVariable, Is.EqualTo(false));
+            Assert.That(result.Counter, Is.EqualTo(18));
             Assert.That(result.Power, Is.EqualTo(1));
         }
 

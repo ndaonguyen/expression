@@ -14,8 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ExpressionNode\" />
-    <Folder Include="Interface\" />
+    <Folder Include="Model\" />
   </ItemGroup>
 
 </Project>
