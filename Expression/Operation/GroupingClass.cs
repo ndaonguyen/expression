@@ -14,10 +14,6 @@ public class GroupingClass
 
         if (_result.TryGetValue(nodeKey, out var nodeModel))
         {
-            if (!nodeModel.WithVariable)
-            {
-                var a = 0;
-            }
             nodeModel.Counter += analyzeNode.Counter;
         }
         else

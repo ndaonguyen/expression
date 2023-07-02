@@ -142,8 +142,7 @@ public static class Evaluation
 
         public ExpressionNode Visit(ElementNode node)
         {
-            var result = ElementNodeAnalysis.CombineForMultiply(_nodeToOperate, node);
-            return result;
+            return ElementNodeAnalysis.CombineForMultiply(_nodeToOperate, node);
         }
 
         public ExpressionNode Visit(AddNode node)

@@ -1,80 +1,45 @@
-﻿using System;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
-using NCalc;
-using System;
+﻿using Expression.Operation;
+
+namespace Expression;
 
 class Program
 {
-    public class ExpressionSimplifier
-    {
-        public string SimplifyExpression(string inputExpression)
-        {
-            string simplifiedExpression = SimplifyHelper(inputExpression);
-            return simplifiedExpression;
-        }
-
-        private string SimplifyHelper(string expression)
-        {
-            // Base case: if the expression does not contain any operator, it is already simplified
-            if (!expression.Contains("+") && !expression.Contains("*"))
-                return expression;
-
-            // Find the outermost parentheses
-            int openBracketIndex = expression.LastIndexOf('(');
-            string simplifiedSubExpression = expression;
-            if (openBracketIndex != -1)
-            {
-                int closeBracketIndex = expression.IndexOf(')', openBracketIndex);
-
-                // Extract the sub-expression inside the outermost parentheses
-                var subExpression = expression.Substring(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1);
-                // Simplify the sub-expression
-                simplifiedSubExpression = SimplifyHelper(subExpression);
-            }
-            
-
-            // Replace the sub-expression (including parentheses) with its simplified form
-            string simplifiedExpression = expression.Replace("(" + expression + ")", simplifiedSubExpression);
-
-            // Recursively simplify the expression until no parentheses are left
-            return SimplifyHelper(simplifiedExpression);
-        }
-    }
-
     static void Main()
     {
-       
+        var expr1 = "3";
+        var tryResult1 = Parser.TryParseExpression(expr1);
+        var exprNode1 = tryResult1.Value;
+        var resultExpr1 = Evaluation.EvaluateExpression(exprNode1!);
+        Console.WriteLine($"Input {expr1}. Output: {resultExpr1}");
 
-        /*// Define the variable 'x' and assign a value to it
-        int x = 2;
+        var expr2 = "x";
+        var tryResult2 = Parser.TryParseExpression(expr2);
+        var exprNode2 = tryResult2.Value;
+        var resultExpr2 = Evaluation.EvaluateExpression(exprNode2!);
+        Console.WriteLine($"Input {expr2}. Output: {resultExpr2}");
 
-        try
-        {
-            // Evaluate the expression that references 'x'
-            object result = CSharpScript.EvaluateAsync("(x + 1 + 1)").Result;
-            Console.WriteLine(result);
-        }
-        catch (CompilationErrorException ex)
-        {
-            Console.WriteLine("Compilation Error: " + ex.Message);
-        }*/
+        var expr3 = "(x+1)";
+        var tryResult3 = Parser.TryParseExpression(expr3);
+        var exprNode3 = tryResult3.Value;
+        var resultExpr3 = Evaluation.EvaluateExpression(exprNode3!);
+        Console.WriteLine($"Input {expr3}. Output: {resultExpr3}");
 
-        /*string input = "x+1+1+1";
-        string modifiedInput = input.Replace("x", "0");
-        Expression expression = new Expression(modifiedInput);
+        var expr4 = "((1+2+1)*(1+1)*x)";
+        var tryResult4 = Parser.TryParseExpression(expr4);
+        var exprNode4 = tryResult4.Value;
+        var resultExpr4 = Evaluation.EvaluateExpression(exprNode4!);
+        Console.WriteLine($"Input {expr4}. Output: {resultExpr4}");
 
-        try
-        {
-            object result = expression.Evaluate();
-            string output = input.Replace("x", result.ToString());
-            Console.WriteLine(output);
-        }
-        catch (EvaluationException ex)
-        {
-            Console.WriteLine("Evaluation Error: " + ex.Message);
-        }*/
+        var expr5 = "(1+(2*x)+1)";
+        var tryResult5 = Parser.TryParseExpression(expr5);
+        var exprNode5 = tryResult5.Value;
+        var resultExpr5 = Evaluation.EvaluateExpression(exprNode5!);
+        Console.WriteLine($"Input {expr5}. Output: {resultExpr5}");
+
+        var expr6 = "((1+(2*x)+1)*(x+1))";
+        var tryResult6 = Parser.TryParseExpression(expr6);
+        var exprNode6 = tryResult6.Value;
+        var resultExpr6 = Evaluation.EvaluateExpression(exprNode6!);
+        Console.WriteLine($"Input {expr6}. Output: {resultExpr6}");
     }
 }
