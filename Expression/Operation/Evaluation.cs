@@ -91,6 +91,9 @@ public static class Evaluation
         }
     }
 
+    /// <summary>
+    /// This class is to do multiply between an expression node and another expression node
+    /// </summary>
     private class ExpressionMultiplyVisitor : IExpressionNodeVisitor<ExpressionNode>
     {
         private readonly ExpressionNode _nodeToOperate;
@@ -130,7 +133,10 @@ public static class Evaluation
         }
     }
 
-    ///Note that in the end, the result is the group of element node only => in Evaluation, we can group and simplify
+    /////Note that in the end, the result is the group of element node only => in Evaluation, we can group and simplify
+    /// <summary>
+    /// This class is to do multiply between an element node with an Expression
+    /// </summary>
     private class ElementNodeMultiplyVisitor : IExpressionNodeVisitor<ExpressionNode>
     {
         private readonly ElementNode _nodeToOperate;
