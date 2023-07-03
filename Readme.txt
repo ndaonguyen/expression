@@ -1,4 +1,4 @@
-Please run Program to see input and output which I follow those examples you gave me. You can try to input more and see how the output looks like.
+Please run Program to see input and output. You can try to input more and see how the output looks like.
 
 Beside that, to have a better understanding about the project, please take a look at the unit tests.
 _ ParserExpressionTest : is to test Parser (input a string => output Expression).  
