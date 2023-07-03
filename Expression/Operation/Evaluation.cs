@@ -133,9 +133,9 @@ public static class Evaluation
         }
     }
 
-    /////Note that in the end, the result is the group of element node only => in Evaluation, we can group and simplify
     /// <summary>
     /// This class is to do multiply between an element node with an Expression
+    /// Note that in the end, the result is the group of element node only => in Evaluation, we can group and simplify
     /// </summary>
     private class ElementNodeMultiplyVisitor : IExpressionNodeVisitor<ExpressionNode>
     {

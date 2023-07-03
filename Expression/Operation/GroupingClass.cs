@@ -25,7 +25,6 @@ public class GroupingClass
     public override string ToString()
     {
         var stringBuilder = new StringBuilder();
-        var re = _result.Values.OrderByDescending(x => x.Power).ToList();
         var allNodes = _result.Values.OrderByDescending(x => x.Power).ThenByDescending(x => x.WithVariable).ToList();
         foreach (var node in allNodes)
         {

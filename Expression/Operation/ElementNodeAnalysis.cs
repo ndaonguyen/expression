@@ -18,7 +18,7 @@ public static class ElementNodeAnalysis
         
         if (valueStr.Contains('*') || valueStr.Contains('^'))
         {
-            // we only have x, 2*x, or 3*x or <number>*x or 2*x^3
+            // we can have x, 2*x, or 3*x or <number>*x or 2*x^3
             var components = valueStr.Split('*');
             if (components.Length > 2) throw new InvalidOperationException($"Wrong format for node : {node.Value}");
 
@@ -45,8 +45,7 @@ public static class ElementNodeAnalysis
             return nodeModel;
         }
        
-        // If the node length is 1 => either variable or number only
-        // no *, no ^
+        // at this stage => either variable or number only, no *, no ^
         if (valueStr == Evaluation.VARIABLE)
         {
             nodeModel.WithVariable = true;
@@ -65,7 +64,6 @@ public static class ElementNodeAnalysis
         /// If the elementNode is 2*x^2 => counter is 2, power is 2
         ///                         x^3 => counter is 1, power is 3
         /// </summary>
-        
         public NodeModel()
         {
             Counter = 1;
@@ -123,6 +121,9 @@ public static class ElementNodeAnalysis
         }
     }
 
+    /// <summary>
+    /// This is to do multiply between 2 elementNodes and return a result elementNode
+    /// </summary>
     internal static ElementNode CombineForMultiply(ElementNode node1, ElementNode node2)
     {
         if (node1 == null) throw new ArgumentNullException(nameof(node1));

@@ -78,7 +78,7 @@ public static class Parser
                     return nextNode;
                 }
 
-                if (node is AddNode parentNode)
+                if (node is AddNode parentNode) // in case we have multiple operands (like x+1+2+x), not only 2 operands
                 {
                     parentNode.AddElement(nextNode.Value!);
                     node = parentNode;
